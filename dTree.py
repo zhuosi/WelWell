@@ -18,10 +18,8 @@ def get_error(G, Y):
             error += 1
     return 1.0 * error / len(G)
 
-# NOTE: Decrease if you want to do some cross validation. 
-# (just changed to 4000 to train the final model, after selected leaf
-# parameter via cross valiation)
-NUM_TRAININGS = 15000
+# NOTE: Decrease if you want to do your own CV on the trianing data
+NUM_TRAININGS = 15120
 
 fin_name = 'train.csv'
 fout_name = 'test.csv'
@@ -45,13 +43,12 @@ X_train = trainingData[:NUM_TRAININGS, 1:-1]
 Y_train = trainingData[:NUM_TRAININGS, -1]
 
 # these will be empty unless you do some cross validation
-X_test = trainingData[NUM_TRAININGS:, 1:-1]
-Y_test = trainingData[NUM_TRAININGS:, -1]
+X_validation = trainingData[NUM_TRAININGS:, 1:-1]
+Y_validation = trainingData[NUM_TRAININGS:, -1]
 
 X_testfile = testData[:, 1:]
 
-
-min_samples_leafs = [1, 5, 10, 20]
+min_samples_leafs = range(1,15)
 
 for min_samples_leaf in min_samples_leafs:
 
@@ -72,8 +69,11 @@ for min_samples_leaf in min_samples_leafs:
     print test_error
 
     """
+
+    # Run some cross validation
     K = 10
     scores = cross_validation.cross_val_score(clf, X_train, Y_train, cv=K, scoring='accuracy', verbose = 0, n_jobs = -1)
-    print('Scores = {}'.format(scores))
+    #print('Scores = {}'.format(scores))
+    print 'Min_samples = ', min_samples_leaf, ' Avg score: ', sum(scores)/len(scores)
 
 
