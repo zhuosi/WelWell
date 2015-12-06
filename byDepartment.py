@@ -6,8 +6,11 @@ import matplotlib.pyplot as plt
 
 # cross validation
 from sklearn import cross_validation
-from sklearn import svm
+from sklearn.svm import SVC
 from sklearn import preprocessing
+from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import metrics
 
 from sklearn.feature_extraction import DictVectorizer
 
@@ -67,35 +70,44 @@ train_VisitNumbers = [int(i[0]) for i in X_train.index.values]
 test_VisitNumbers = X_test.index.values
 
 
-from sklearn import tree
-print "Training Decision Tree..."
-clf = tree.DecisionTreeClassifier()
-clf = clf.fit(X_train, Y_train)
-predictions = clf.predict(X_test)
-training_probabilities = clf.predict_proba(X_train)
-
-class_probabilities = clf.predict_proba(X_test)
-
-
 truth_values = np.zeros(Y_train.shape[0])
 for i, e in enumerate(Y_train):
     truth_values[i] = ordering.index(e)
-cross_entropy(truth_values, training_probabilities)
+
+print "Training Decision Tree..."
+
+clf = tree.DecisionTreeClassifier()
+
+
+class_w = Counter(Y_train)
+num_forests = [10]
+for n in num_forests:
+    print "Forests: ", n
+    clf = SVC(probability = True)
+
+    #clf = RandomForestClassifier(n_estimators = n, criterion = 'gini', class_weight = None)
+    #K = 2
+    #scores = cross_validation.cross_val_score(clf, X_train, Y_train, cv=K, scoring='log_loss', verbose = 1, n_jobs = -1)
+    #print('Scores = {}'.format(scores))
+
+    clf = clf.fit(X_train, Y_train)
+    predictions = clf.predict(X_test)
+    training_probabilities = clf.predict_proba(X_train)
+
+    class_probabilities = clf.predict_proba(X_test)
+
+    #cross_entropy(truth_values, training_probabilities)
+    print "Training Loss: ", metrics.log_loss(Y_train, training_probabilities)
+
+
+
 
 """
 f = open('walmartDTree.csv','w')
 f.write('"VisitNumber","TripType_3","TripType_4","TripType_5","TripType_6","TripType_7","TripType_8","TripType_9","TripType_12","TripType_14","TripType_15","TripType_18","TripType_19","TripType_20","TripType_21","TripType_22","TripType_23","TripType_24","TripType_25","TripType_26","TripType_27","TripType_28","TripType_29","TripType_30","TripType_31","TripType_32","TripType_33","TripType_34","TripType_35","TripType_36","TripType_37","TripType_38","TripType_39","TripType_40","TripType_41","TripType_42","TripType_43","TripType_44","TripType_999"\n')
 for (i, e) in enumerate(class_probabilities):
-    #print i, e
-    print i
-    #if i > 5:
-    #    break
     visitNumber = test_VisitNumbers[i]
-    #if i < 95671:
-    #    continue
-    #print e, visitNumber
     a = ['{:.2f}'.format(x) for x in e] # format floats
-
     for i,e in enumerate(a):
         if e == '0.00':
             a[i] = '0'

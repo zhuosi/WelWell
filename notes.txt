@@ -1,0 +1,9 @@
+
+Linear SVC
+------------
+Forests:  10
+[Parallel(n_jobs=-1)]: Done   1 out of   2 | elapsed: 17.7min remaining: 17.7min
+[Parallel(n_jobs=-1)]: Done   2 out of   2 | elapsed: 17.7min finished
+Scores = [-1.30207254 -1.33270537]
+
+Training Loss:  1.14885190765
